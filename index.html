@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Nation Divided: Civil War Map Missions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>A Nation Divided: Civil War Map Missions
+    <small>Based on the Esri GeoInquiries lesson for U.S. History</small></h1>
+  <div class="hud">
+    <div class="score"><span id="scoreVal">0</span> <span>points</span></div>
+    <div class="badges" id="badges"></div>
+    <div class="tools">
+      <button id="btnHelp" type="button">How to play</button>
+      <button id="btnSources" type="button">Sources</button>
+      <button id="btnTeacher" type="button">Teacher notes</button>
+      <button id="btnReset" type="button">Reset</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <aside class="rail" aria-label="Missions">
+    <div class="rail-head"><span>Missions</span><button type="button" id="railHide" aria-label="Hide the missions panel">Hide</button></div>
+    <nav class="progress" id="progressNav" aria-label="Mission progress"></nav>
+    <section class="mission" id="mission" aria-live="polite"></section>
+  </aside>
+
+  <section class="mapwrap" aria-label="Map">
+    <div id="viewDiv"></div>
+    <button type="button" class="rail-show" id="railShow" aria-label="Show the missions panel">Show missions</button>
+    <div class="map-banner" id="mapBanner"></div>
+    <div class="maptools" id="mapTools">
+      <div class="layers-panel" id="layersPanel">
+        <div class="layers-head"><span>Layers</span><button type="button" id="layersToggle" aria-expanded="true" aria-controls="layersList">Hide</button></div>
+        <ul class="layers-list" id="layersList">
+          <li><label><input type="checkbox" data-layer="capitals" checked> Capitals</label></li>
+          <li><label><input type="checkbox" data-layer="battles"> Battles</label></li>
+          <li><label><input type="checkbox" data-layer="blockade"> Union blockade</label></li>
+          <li><label><input type="checkbox" data-layer="control"> Union control milestones</label></li>
+          <li><label><input type="checkbox" data-layer="states" checked> States in the Civil War</label></li>
+        </ul>
+      </div>
+      <button type="button" id="btnMeasure" class="measure-btn" title="Measure distance" aria-label="Measure distance" aria-pressed="false"><span class="esri-icon-measure-line" aria-hidden="true"></span></button>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="yearbar" id="yearBar" aria-label="Filter battles by year"></div>
+    <div class="mapstatus" id="mapStatus">Loading map</div>
+    <div class="map-error" id="mapError">
+      <div>
+        <h3 style="font-family:var(--serif);margin-top:0">The map could not load</h3>
+        <p>This app loads the ArcGIS Maps SDK for JavaScript from <code>js.arcgis.com</code> and data from ArcGIS Online. Check that your network allows those sites, then reload. The mission questions still work without the map, but map-based tasks will be skipped.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="modal-back" id="modalBack" role="dialog" aria-modal="true">
+  <div class="modal" id="modalBody"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://js.arcgis.com/4.30/"></script>
+<script src="app.js"></script>
+</body>
+</html>
