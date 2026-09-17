@@ -119,12 +119,17 @@ const KEY = {
    GAME STATE
    ===================================================================== */
 const BADGES = [
-  {id:"ask",letter:"A",name:"Cartographer: finished Ask"},
-  {id:"acquire",letter:"S",name:"Surveyor: finished Acquire"},
-  {id:"explore",letter:"E",name:"Scout: finished Explore"},
-  {id:"analyze",letter:"N",name:"Strategist: finished Analyze"},
-  {id:"act",letter:"H",name:"Historian: finished Act"}
+  {id:"ask",letter:"1",name:"Cartographer",section:"Ask"},
+  {id:"acquire",letter:"2",name:"Surveyor",section:"Acquire"},
+  {id:"explore",letter:"3",name:"Scout",section:"Explore"},
+  {id:"analyze",letter:"4",name:"Strategist",section:"Analyze"},
+  {id:"act",letter:"5",name:"Historian",section:"Act"}
 ];
+function badgeStatus(b){
+  if(state.badges.includes(b.id)) return "complete";
+  const started = b.id===state.mission || Object.keys(state.tasks).some(t=>t.startsWith({ask:"ask",acquire:"acq",explore:"exp",analyze:"ana",act:"act"}[b.id]));
+  return started?"in progress":"not started";
+}
 const MISSIONS = ["ask","acquire","explore","analyze","act"];
 const MISSION_TITLES = {ask:"Ask",acquire:"Acquire",explore:"Explore",analyze:"Analyze",act:"Act"};
 
@@ -156,7 +161,7 @@ function earnBadge(id){
   state.badges.push(id); state.done[id]=true; save();
   renderBadges(); renderProgress();
   const b = BADGES.find(x=>x.id===id);
-  toast(`Badge earned: ${b.name.split(":")[0]}`);
+  toast(`Badge earned: ${b.name}`);
 }
 function toast(msg){
   const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
@@ -167,7 +172,8 @@ function renderBadges(){
   BADGES.forEach(b=>{
     const d=document.createElement("div");
     d.className="badge"+(state.badges.includes(b.id)?" earned":"");
-    d.textContent=b.letter; d.setAttribute("data-tip",b.name); d.setAttribute("aria-label",b.name);
+    const tip=`${b.letter}: ${b.section} ${badgeStatus(b)}`;
+    d.textContent=b.letter; d.setAttribute("data-tip",tip); d.setAttribute("aria-label",tip);
     el.appendChild(d);
   });
   document.getElementById("scoreVal").textContent=state.score;
@@ -383,7 +389,7 @@ function renderLegend(){
       <div><span class="sw dot" style="background:#9C7A4A"></span>Confederate victory</div>
       <div><span class="sw dot" style="background:#6E6E6E"></span>Inconclusive / other</div>`);
   }
-  if(on("control")) rows.push(`<h5>Union control</h5><div><span class="sw" style="background:#7FA7D9"></span>1862</div><div><span class="sw" style="background:#2E5E9E"></span>1863</div><div><span class="sw" style="background:#1F4275"></span>1864</div><div><span class="sw" style="background:#12294A"></span>1865</div>`);
+  if(on("control")) rows.push(`<h5>Union control milestones</h5><div><span class="sw" style="background:#7FA7D9"></span>1862</div><div><span class="sw" style="background:#2E5E9E"></span>1863</div><div><span class="sw" style="background:#1F4275"></span>1864</div><div><span class="sw" style="background:#12294A"></span>1865</div>`);
   if(on("blockade")) rows.push(`<h5>Blockade</h5><div><span class="sw" style="border:0;border-top:3px dashed #2E5E9E;height:0"></span>Union naval blockade</div>`);
   if(!map.layers.states||on("states")){
     rows.push(`<h5>States</h5>
@@ -471,7 +477,7 @@ function renderMission(){
 function finishBlock(container,missionId,nextId,requiredTasks){
   missionEl._finish={container,missionId,nextId,requiredTasks};
   const allDone=requiredTasks.every(taskDone);
-  const wrap=h(`<div class="task finish-block" style="border-color:${allDone?"var(--ok)":"var(--rule)"}"><h3>${allDone?"Mission complete":"Finish every task to unlock the next mission"}</h3><p class="hint">${requiredTasks.filter(taskDone).length} of ${requiredTasks.length} tasks done.</p><div class="row"></div></div>`);
+  const wrap=h(`<div class="task finish-block" style="border-color:${allDone?"var(--ok)":"var(--rule)"}"><h3>${allDone?"Section complete":"Finish every task to unlock the next section"}</h3><p class="hint">${requiredTasks.filter(taskDone).length} of ${requiredTasks.length} tasks done.</p><div class="row"></div></div>`);
   const row=wrap.querySelector(".row");
   if(allDone){
     earnBadge(missionId);
@@ -488,7 +494,7 @@ function updateFinishBlock(){
 /* ---------- 1. ASK: Who fought in the Civil War? ---------- */
 function missionAsk(){
   const c=missionEl;
-  c.appendChild(h(`<h2>Mission 1: Ask</h2>`));
+  c.appendChild(h(`<h2>Ask</h2>`));
   c.appendChild(h(`<p class="question-head">Who fought in the Civil War?</p>`));
   c.appendChild(h(`<p>Click states on the map to see how each one lined up in 1861. Then complete the tasks below.</p>`));
   setLayer("states",true); setLayer("capitals",true); setLayer("battles",false); setLayer("blockade",false); setLayer("control",false);
@@ -534,7 +540,7 @@ function missionAsk(){
 /* ---------- 2. ACQUIRE: How close were the capital cities? ---------- */
 function missionAcquire(){
   const c=missionEl;
-  c.appendChild(h(`<h2>Mission 2: Acquire</h2>`));
+  c.appendChild(h(`<h2>Acquire</h2>`));
   c.appendChild(h(`<p class="question-head">How close were the capital cities?</p>`));
   setLayer("states",true); setLayer("capitals",true); setLayer("battles",false); setLayer("blockade",false); setLayer("control",false);
   goTo({center:[-77.3,38.2],zoom:7});
@@ -570,7 +576,7 @@ function missionAcquire(){
 /* ---------- 3. EXPLORE: Where did the armies fight? ---------- */
 function missionExplore(){
   const c=missionEl;
-  c.appendChild(h(`<h2>Mission 3: Explore</h2>`));
+  c.appendChild(h(`<h2>Explore</h2>`));
   c.appendChild(h(`<p class="question-head">Where did the armies fight?</p>`));
   setLayer("states",true); setLayer("capitals",true); setLayer("blockade",true); setLayer("battles",true); setLayer("control",false);
   goTo({center:[-86,34],zoom:5});
@@ -647,7 +653,7 @@ function missionExplore(){
 /* ---------- 4. ANALYZE: How did the Union gain control? ---------- */
 function missionAnalyze(){
   const c=missionEl;
-  c.appendChild(h(`<h2>Mission 4: Analyze</h2>`));
+  c.appendChild(h(`<h2>Analyze</h2>`));
   c.appendChild(h(`<p class="question-head">How did the Union gain control of the Confederacy?</p>`));
   setLayer("states",true); setLayer("capitals",true); setLayer("battles",false); setLayer("blockade",true); setLayer("control",true);
   goTo({center:[-86,33.5],zoom:5});
@@ -705,7 +711,7 @@ function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.rando
 /* ---------- 5. ACT: Which area was most important? ---------- */
 function missionAct(){
   const c=missionEl;
-  c.appendChild(h(`<h2>Mission 5: Act</h2>`));
+  c.appendChild(h(`<h2>Act</h2>`));
   c.appendChild(h(`<p class="question-head">Which area was most important to the Confederacy?</p>`));
   setLayer("states",true); setLayer("capitals",true); setLayer("battles",true); setLayer("blockade",true); setLayer("control",true);
   goTo({center:[-86,34],zoom:5});
@@ -757,15 +763,15 @@ function buildReport(){
   const a=state.answers, L=[];
   L.push("A Nation Divided: Civil War Map Missions — student answers");
   L.push("Submitted: "+new Date().toLocaleString());
-  L.push("Score: "+state.score+" | Badges: "+state.badges.map(b=>BADGES.find(x=>x.id===b).name.split(":")[0]).join(", "));
+  L.push("Score: "+state.score+" | Badges: "+state.badges.map(b=>BADGES.find(x=>x.id===b).name).join(", "));
   L.push("");
-  L.push("Mission 1 (Ask): states found: "+JSON.stringify(a.askFound||{}));
+  L.push("Ask: states found: "+JSON.stringify(a.askFound||{}));
   ["askClassify","askSlavery","askCount","acqUnionCap","acqConfedCap","acqWhy","expBlockade","expDirection","expGeorgia","anaMiss","anaSplit","anaRich"].forEach(k=>{ if(a[k]) L.push(k+": "+a[k]); });
   if(a.expPatterns) L.push("expPatterns: "+a.expPatterns.join(" | "));
   L.push("Distance D.C. to Richmond (entered): "+(a.acqDistance||"—")+" miles");
   if(a.findBattle) L.push("Find the battle: "+a.findBattle.log.map(x=>x.skipped?x.title+" (skipped)":`${x.title} ${x.miles} mi (+${x.pts})`).join("; "));
   if(a.anaOrder) L.push("Event order submitted: "+a.anaOrder.map(x=>x+1).join(","));
-  if(a.act){ L.push(""); L.push("Mission 5 (Act) position: "+a.act.option); L.push(a.act.text); }
+  if(a.act){ L.push(""); L.push("Act position: "+a.act.option); L.push(a.act.text); }
   return L.join("\n");
 }
 
@@ -779,13 +785,13 @@ document.addEventListener("keydown",e=>{ if(e.key==="Escape") modalBack.classLis
 
 document.getElementById("btnHelp").addEventListener("click",()=>openModal(`
   <h2>How to play</h2>
-  <p>You work through five missions in the same order as the GeoInquiry lesson: Ask, Acquire, Explore, Analyze, Act. Each mission unlocks the next once every task is done. Earn points for correct answers (a streak of three correct answers adds a bonus) and a badge for each mission.</p>
+  <p>You work through five sections in the same order as the GeoInquiry lesson: Ask, Acquire, Explore, Analyze, Act. Each section unlocks the next once every task is done. Earn points for correct answers (a streak of three correct answers adds a bonus) and a badge for each section.</p>
   <h3>Map controls</h3>
   <ul>
     <li>The Layers list (top right) has a checkbox for each map layer. When Battles is checked, year buttons appear at the bottom of the map so you can look at one year of the war at a time.</li>
     <li>Click any state, capital, battle, or milestone marker to open its details.</li>
     <li>Measure distance: the ruler button under the Layers list opens the measure tool. Click a start point, then double-click to finish. The tool panel shows miles.</li>
-    <li>The app has two modes. Mission mode (the default) walks you through the five missions. Explore mode hides the missions and scoring and turns on every layer so you can use the map freely; switch with the Mission / Explore buttons in the header.</li>
+    <li>The app has two modes. GeoInquiry mode (the default) walks you through the five sections: Ask, Acquire, Explore, Analyze, Act. Explore mode hides the GeoInquiry panel and scoring and turns on every layer so you can use the map freely; switch with the GeoInquiry / Explore buttons in the header.</li>
     <li>Your progress saves in this browser. Use Reset to start over.</li>
   </ul>`));
 
