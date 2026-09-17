@@ -81,8 +81,10 @@
   body.mode-explore .hud .score,
   body.mode-explore .hud .badges{display:none}
   body.mode-explore .rail{display:none}
-  body.mode-explore .rail-show{display:block}
   body.mode-explore .map-banner{display:none}
+  body.mode-explore .tools #btnHelp,
+  body.mode-explore .tools #btnSources,
+  body.mode-explore .tools #btnTeacher{display:none}
   .topbar .tools button{
     background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);
     padding:6px 12px;border-radius:4px;font-size:.9rem;
@@ -106,15 +108,6 @@
     background:#fff;border:1px solid var(--rule);border-radius:4px;padding:3px 10px;font-size:.85rem;color:var(--ink);
   }
   .rail-head button:hover{border-color:var(--ink)}
-  .rail-show{
-    position:absolute;top:16px;left:0;z-index:5;display:none;
-    writing-mode:vertical-rl;transform:rotate(180deg);
-    background:#FFFFFF;color:var(--ink);border:1px solid var(--rule);border-right:0;
-    border-left:4px solid var(--brass);border-radius:6px 0 0 6px;
-    padding:14px 8px;font-weight:700;letter-spacing:.02em;
-    box-shadow:-2px 0 8px rgba(0,0,0,.18);
-  }
-  .rail-show:hover{background:#F2F4F0}
   .progress{
     display:grid;grid-template-columns:repeat(5,1fr);
     border-bottom:1px solid var(--rule);

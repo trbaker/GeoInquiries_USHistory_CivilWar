@@ -783,7 +783,7 @@ document.getElementById("btnHelp").addEventListener("click",()=>openModal(`
     <li>The Layers list (top right) has a checkbox for each map layer. When Battles is checked, year buttons appear at the bottom of the map so you can look at one year of the war at a time.</li>
     <li>Click any state, capital, battle, or milestone marker to open its details.</li>
     <li>Measure distance: the ruler button under the Layers list opens the measure tool. Click a start point, then double-click to finish. The tool panel shows miles.</li>
-    <li>The app has two modes. Mission mode (the default) walks you through the five missions. Explore mode hides the missions and scoring and turns on every layer so you can use the map freely; switch with the Mission / Explore buttons in the header, the Hide button on the missions panel, or the Back to missions tab.</li>
+    <li>The app has two modes. Mission mode (the default) walks you through the five missions. Explore mode hides the missions and scoring and turns on every layer so you can use the map freely; switch with the Mission / Explore buttons in the header.</li>
     <li>Your progress saves in this browser. Use Reset to start over.</li>
   </ul>`));
 
@@ -836,8 +836,6 @@ function setMode(next){
   }
   if(map.ready && map.view) setTimeout(()=>{ try{ map.view.resize(); }catch(e){} },50);
 }
-document.getElementById("railHide").addEventListener("click",()=>setMode("explore"));
-document.getElementById("railShow").addEventListener("click",()=>setMode("mission"));
 document.getElementById("modeMission").addEventListener("click",()=>setMode("mission"));
 document.getElementById("modeExplore").addEventListener("click",()=>setMode("explore"));
 
