@@ -96,12 +96,16 @@
   .rail-head button:hover{border-color:var(--ink)}
   main.rail-hidden .rail{display:none}
   .rail-show{
-    position:absolute;top:12px;left:12px;z-index:5;display:none;
-    background:var(--ink);color:#fff;border:0;border-radius:6px;padding:7px 12px;font-weight:600;
-    box-shadow:0 2px 8px rgba(0,0,0,.25);
+    position:absolute;top:16px;left:0;z-index:5;display:none;
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    background:#FFFFFF;color:var(--ink);border:1px solid var(--rule);border-right:0;
+    border-left:4px solid var(--brass);border-radius:6px 0 0 6px;
+    padding:14px 8px;font-weight:700;letter-spacing:.02em;
+    box-shadow:-2px 0 8px rgba(0,0,0,.18);
   }
+  .rail-show:hover{background:#F2F4F0}
   main.rail-hidden .rail-show{display:block}
-  main.rail-hidden .map-banner{top:52px}
+  main.rail-hidden .map-banner{left:52px}
   .progress{
     display:grid;grid-template-columns:repeat(5,1fr);
     border-bottom:1px solid var(--rule);

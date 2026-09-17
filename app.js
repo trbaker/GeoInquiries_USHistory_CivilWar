@@ -501,7 +501,7 @@ function missionAsk(){
   if(map.failed){ f.hidden=false; fb(f,false,"The map is not available, so this task is skipped. Answer the questions below."); state.tasks.askMap=true; save(); }
   else if(!map.ready){ f.hidden=false; fb(f,false,"Waiting for the map to load."); }
   else if(!taskDone("askMap")){
-    banner("<b>Click a state</b> on the map to classify it.");
+    banner("<b>Click a state</b> on the map to identify it.");
     map.clickHandler=async(ev)=>{
       const hit=await map.view.hitTest(ev,{include:map.layers.states});
       const g=hit.results[0]&&hit.results[0].graphic; if(!g) return;
