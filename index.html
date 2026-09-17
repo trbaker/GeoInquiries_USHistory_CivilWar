@@ -55,14 +55,17 @@
         <ul class="layers-list" id="layersList">
           <li><label><input type="checkbox" data-layer="capitals" checked> Capitals</label></li>
           <li><label><input type="checkbox" data-layer="battles"> Battles</label></li>
-          <li><label><input type="checkbox" data-layer="blockade"> Union blockade</label></li>
           <li><label><input type="checkbox" data-layer="control"> Union control milestones</label></li>
+          <li><label><input type="checkbox" data-layer="blockade"> Union blockade</label></li>
           <li><label><input type="checkbox" data-layer="states" checked> States in the Civil War</label></li>
         </ul>
       </div>
       <button type="button" id="btnMeasure" class="measure-btn" title="Measure distance" aria-label="Measure distance" aria-pressed="false"><span class="esri-icon-measure-line" aria-hidden="true"></span></button>
     </div>
-    <div class="legend" id="legend"></div>
+    <div class="legend" id="legendBox">
+      <div class="legend-head"><span>Legend</span><button type="button" id="legendToggle" aria-expanded="true" aria-controls="legend">Hide</button></div>
+      <div class="legend-body" id="legend"></div>
+    </div>
     <div class="yearbar" id="yearBar" aria-label="Filter battles by year"></div>
     <div class="mapstatus" id="mapStatus">Loading map</div>
     <div class="map-error" id="mapError">

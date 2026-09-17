@@ -353,6 +353,8 @@ function wireMapTools(){
   });
   const tg=document.getElementById("layersToggle"), list=document.getElementById("layersList");
   tg.addEventListener("click",()=>{ const open=list.classList.toggle("collapsed")===false; tg.textContent=open?"Hide":"Show"; tg.setAttribute("aria-expanded",String(open)); });
+  const lg=document.getElementById("legendToggle"), lbody=document.getElementById("legend");
+  lg.addEventListener("click",()=>{ const open=lbody.classList.toggle("collapsed")===false; lg.textContent=open?"Hide":"Show"; lg.setAttribute("aria-expanded",String(open)); });
   document.getElementById("btnMeasure").addEventListener("click",toggleMeasure);
 
 }
@@ -375,6 +377,14 @@ function banner(html){
 function renderLegend(){
   const L=document.getElementById("legend"); const rows=[];
   const on=(n)=>map.layers[n]&&map.layers[n].visible;
+  if(on("battles")){
+    rows.push(`<h5>Battles (by result)</h5>
+      <div><span class="sw dot" style="background:#2E5E9E"></span>Union victory</div>
+      <div><span class="sw dot" style="background:#9C7A4A"></span>Confederate victory</div>
+      <div><span class="sw dot" style="background:#6E6E6E"></span>Inconclusive / other</div>`);
+  }
+  if(on("control")) rows.push(`<h5>Union control</h5><div><span class="sw" style="background:#7FA7D9"></span>1862</div><div><span class="sw" style="background:#2E5E9E"></span>1863</div><div><span class="sw" style="background:#1F4275"></span>1864</div><div><span class="sw" style="background:#12294A"></span>1865</div>`);
+  if(on("blockade")) rows.push(`<h5>Blockade</h5><div><span class="sw" style="border:0;border-top:3px dashed #2E5E9E;height:0"></span>Union naval blockade</div>`);
   if(!map.layers.states||on("states")){
     rows.push(`<h5>States</h5>
       <div><span class="sw" style="background:rgba(46,94,158,.62)"></span>Union (North)</div>
@@ -382,14 +392,6 @@ function renderLegend(){
       <div><span class="sw" style="background:rgba(201,162,39,.62)"></span>Border state</div>
       <div><span class="sw" style="background:rgba(201,207,199,.45)"></span>Territory in 1861</div>`);
   }
-  if(on("battles")){
-    rows.push(`<h5>Battles (by result)</h5>
-      <div><span class="sw dot" style="background:#2E5E9E"></span>Union victory</div>
-      <div><span class="sw dot" style="background:#9C7A4A"></span>Confederate victory</div>
-      <div><span class="sw dot" style="background:#6E6E6E"></span>Inconclusive / other</div>`);
-  }
-  if(on("blockade")) rows.push(`<h5>Blockade</h5><div><span class="sw" style="border:0;border-top:3px dashed #2E5E9E;height:0"></span>Union naval blockade</div>`);
-  if(on("control")) rows.push(`<h5>Union control</h5><div><span class="sw" style="background:#7FA7D9"></span>1862</div><div><span class="sw" style="background:#2E5E9E"></span>1863</div><div><span class="sw" style="background:#1F4275"></span>1864</div><div><span class="sw" style="background:#12294A"></span>1865</div>`);
   L.innerHTML=rows.join("");
 }
 function goTo(target,zoom){ if(map.ready) map.view.goTo(Object.assign({},target,zoom?{zoom}:{})).catch(()=>{}); }
