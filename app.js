@@ -461,6 +461,7 @@ function multiSelect(container,{id,points,question,choices,correct,explain}){
 
 function renderMission(){
   renderProgress(); renderBadges();
+  if(mode==="explore") return;
   missionEl.innerHTML=""; missionEl._finish=null; clearGame(); toggleMeasure(false);
   ({ask:missionAsk,acquire:missionAcquire,explore:missionExplore,analyze:missionAnalyze,act:missionAct})[state.mission]();
   missionEl.scrollTop=0;
@@ -782,7 +783,7 @@ document.getElementById("btnHelp").addEventListener("click",()=>openModal(`
     <li>The Layers list (top right) has a checkbox for each map layer. When Battles is checked, year buttons appear at the bottom of the map so you can look at one year of the war at a time.</li>
     <li>Click any state, capital, battle, or milestone marker to open its details.</li>
     <li>Measure distance: the ruler button under the Layers list opens the measure tool. Click a start point, then double-click to finish. The tool panel shows miles.</li>
-    <li>Press Hide at the top of the missions panel to give the map the whole screen; Show missions brings it back.</li>
+    <li>The app has two modes. Mission mode (the default) walks you through the five missions. Explore mode hides the missions and scoring and turns on every layer so you can use the map freely; switch with the Mission / Explore buttons in the header, the Hide button on the missions panel, or the Back to missions tab.</li>
     <li>Your progress saves in this browser. Use Reset to start over.</li>
   </ul>`));
 
@@ -817,15 +818,28 @@ document.getElementById("btnTeacher").addEventListener("click",()=>openModal(`
   </ul>
   <p style="margin-top:22px;border-top:1px solid var(--rule);padding-top:12px">Designed by <a href="https://tbaker.com" target="_blank" rel="noopener">Tom Baker</a></p>`));
 
-const mainEl=document.querySelector("main");
-function setRail(open){
-  mainEl.classList.toggle("rail-hidden",!open);
-  try{ localStorage.setItem("nationDividedRail",open?"open":"closed"); }catch(e){}
+/* ---------- Mission / Explore modes ---------- */
+let mode="mission";   // the app always starts in Mission mode
+function setMode(next){
+  if(next===mode) return;
+  mode=next;
+  document.body.classList.toggle("mode-explore",mode==="explore");
+  document.getElementById("modeMission").setAttribute("aria-pressed",String(mode==="mission"));
+  document.getElementById("modeExplore").setAttribute("aria-pressed",String(mode==="explore"));
+  if(mode==="explore"){
+    // Free exploration: no mission prompts or click tasks, every layer available
+    clearGame(); toggleMeasure(false);
+    ["states","capitals","battles","blockade","control"].forEach(n=>setLayer(n,true));
+    if(map.ready) showAllBattles();
+  } else {
+    renderMission();   // restores the current mission's layers, prompts and map tasks
+  }
   if(map.ready && map.view) setTimeout(()=>{ try{ map.view.resize(); }catch(e){} },50);
 }
-document.getElementById("railHide").addEventListener("click",()=>setRail(false));
-document.getElementById("railShow").addEventListener("click",()=>setRail(true));
-try{ if(localStorage.getItem("nationDividedRail")==="closed") mainEl.classList.add("rail-hidden"); }catch(e){}
+document.getElementById("railHide").addEventListener("click",()=>setMode("explore"));
+document.getElementById("railShow").addEventListener("click",()=>setMode("mission"));
+document.getElementById("modeMission").addEventListener("click",()=>setMode("mission"));
+document.getElementById("modeExplore").addEventListener("click",()=>setMode("explore"));
 
 document.getElementById("btnReset").addEventListener("click",()=>{
   if(!confirm("Reset all progress and start over?")) return;

@@ -71,6 +71,18 @@
     background:#fff;color:var(--ink);padding:4px 8px;border-radius:4px;font-family:var(--sans);
     font-weight:400;font-size:.8rem;white-space:nowrap;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.2);
   }
+  .mode-switch{display:flex;border:1px solid rgba(255,255,255,.45);border-radius:6px;overflow:hidden}
+  .mode-switch button{
+    background:transparent;color:#fff;border:0;padding:6px 14px;font-size:.9rem;font-weight:600;
+  }
+  .mode-switch button+button{border-left:1px solid rgba(255,255,255,.45)}
+  .mode-switch button[aria-pressed="true"]{background:var(--brass);color:var(--ink)}
+  .mode-switch button:hover:not([aria-pressed="true"]){background:rgba(255,255,255,.12)}
+  body.mode-explore .hud .score,
+  body.mode-explore .hud .badges{display:none}
+  body.mode-explore .rail{display:none}
+  body.mode-explore .rail-show{display:block}
+  body.mode-explore .map-banner{display:none}
   .topbar .tools button{
     background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);
     padding:6px 12px;border-radius:4px;font-size:.9rem;
@@ -94,7 +106,6 @@
     background:#fff;border:1px solid var(--rule);border-radius:4px;padding:3px 10px;font-size:.85rem;color:var(--ink);
   }
   .rail-head button:hover{border-color:var(--ink)}
-  main.rail-hidden .rail{display:none}
   .rail-show{
     position:absolute;top:16px;left:0;z-index:5;display:none;
     writing-mode:vertical-rl;transform:rotate(180deg);
@@ -104,8 +115,6 @@
     box-shadow:-2px 0 8px rgba(0,0,0,.18);
   }
   .rail-show:hover{background:#F2F4F0}
-  main.rail-hidden .rail-show{display:block}
-  main.rail-hidden .map-banner{left:52px}
   .progress{
     display:grid;grid-template-columns:repeat(5,1fr);
     border-bottom:1px solid var(--rule);
@@ -260,9 +269,9 @@
   }
   .mapstatus.err{border-color:var(--warn);background:var(--warn-soft)}
   .map-banner{
-    position:absolute;top:12px;left:12px;z-index:5;
+    position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:5;
     background:var(--ink);color:#fff;padding:8px 14px;border-radius:6px;font-size:.95rem;
-    max-width:min(420px,60%);box-shadow:0 2px 8px rgba(0,0,0,.25);
+    max-width:min(480px,55%);text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.25);
     display:none;
   }
   .map-banner.show{display:block}

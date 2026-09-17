@@ -26,6 +26,10 @@
   <div class="hud">
     <div class="score"><span id="scoreVal">0</span> <span>points</span></div>
     <div class="badges" id="badges"></div>
+    <div class="mode-switch" role="group" aria-label="Map mode">
+      <button type="button" id="modeMission" aria-pressed="true">Mission</button>
+      <button type="button" id="modeExplore" aria-pressed="false">Explore</button>
+    </div>
     <div class="tools">
       <button id="btnHelp" type="button">How to play</button>
       <button id="btnSources" type="button">Sources</button>
@@ -37,14 +41,14 @@
 
 <main>
   <aside class="rail" aria-label="Missions">
-    <div class="rail-head"><span>Missions</span><button type="button" id="railHide" aria-label="Hide the missions panel">Hide</button></div>
+    <div class="rail-head"><span>Missions</span><button type="button" id="railHide" aria-label="Hide the missions and switch to Explore mode">Hide</button></div>
     <nav class="progress" id="progressNav" aria-label="Mission progress"></nav>
     <section class="mission" id="mission" aria-live="polite"></section>
   </aside>
 
   <section class="mapwrap" aria-label="Map">
     <div id="viewDiv"></div>
-    <button type="button" class="rail-show" id="railShow" aria-label="Show the missions panel">Show missions</button>
+    <button type="button" class="rail-show" id="railShow" aria-label="Return to Mission mode">Back to missions</button>
     <div class="map-banner" id="mapBanner"></div>
     <div class="maptools" id="mapTools">
       <div class="layers-panel" id="layersPanel">
