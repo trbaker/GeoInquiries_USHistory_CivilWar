@@ -99,7 +99,8 @@
   body.mode-explore .map-banner{display:none}
   body.mode-explore .tools #btnHelp,
   body.mode-explore .tools #btnSources,
-  body.mode-explore .tools #btnTeacher{display:none}
+  body.mode-explore .tools #btnTeacher,
+  body.mode-explore .tools #btnReset{display:none}
   .topbar .tools button{
     background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);
     padding:6px 12px;border-radius:4px;font-size:.9rem;
