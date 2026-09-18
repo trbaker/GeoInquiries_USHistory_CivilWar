@@ -173,7 +173,10 @@ function renderBadges(){
     const d=document.createElement("div");
     d.className="badge"+(state.badges.includes(b.id)?" earned":"");
     const tip=`${b.letter}: ${b.section} ${badgeStatus(b)}`;
-    d.textContent=b.letter; d.setAttribute("data-tip",tip); d.setAttribute("aria-label",tip);
+    // Visible digit for sighted users; full status as hidden text for screen readers;
+    // native title gives mouse users the same text (user-agent tooltips are exempt from 1.4.13).
+    d.innerHTML=`<span aria-hidden="true">${b.letter}</span><span class="visually-hidden">${tip}</span>`;
+    d.setAttribute("role","listitem"); d.setAttribute("title",tip);
     el.appendChild(d);
   });
   document.getElementById("scoreVal").textContent=state.score;
@@ -183,8 +186,10 @@ function renderProgress(){
   MISSIONS.forEach((m,i)=>{
     const b=document.createElement("button"); b.type="button";
     const unlocked = i===0 || state.done[MISSIONS[i-1]];
-    b.innerHTML=`<b>${i+1}</b>${MISSION_TITLES[m]}`;
+    const status=state.done[m]?"completed":(m===state.mission?"current section":(unlocked?"not started":"locked"));
+    b.innerHTML=`<b>${i+1}</b>${MISSION_TITLES[m]}<span class="visually-hidden">, ${status}</span>`;
     b.className=(m===state.mission?"current ":"")+(state.done[m]?"done":"");
+    if(m===state.mission) b.setAttribute("aria-current","step");
     b.disabled=!unlocked;
     b.addEventListener("click",()=>{ state.mission=m; save(); renderMission(); });
     nav.appendChild(b);
@@ -293,13 +298,14 @@ function initMap(){
               const a=f.attributes, r=String(a.result||"").toLowerCase();
               const cls=r.includes("union")?"union":(r.includes("confeder")?"confed":"other");
               const color=cls==="union"?[46,94,158,.9]:cls==="confed"?[156,122,74,.95]:[110,110,110,.9];
+              const shape=cls==="union"?"circle":cls==="confed"?"square":"triangle";   // shape + color, so results are not conveyed by color alone
               const yr=a.start_date?new Date(a.start_date).getFullYear():null;
               const attrs=Object.assign({},a,{start_text:fmt(a.start_date),end_text:fmt(a.end_date),year:yr,
                 cas_text:(a.total_casualties||a.total_casualties===0)?Number(a.total_casualties).toLocaleString():"",
                 link:a.url?`<a href="${a.url}" target="_blank" rel="noopener">American Battlefield Trust page</a>`:""});
               const g=new Graphic({
                 geometry:f.geometry, attributes:attrs,
-                symbol:{type:"simple-marker",style:"circle",size:9,color:color,outline:{color:"#fff",width:1}},
+                symbol:{type:"simple-marker",style:shape,size:shape==="circle"?9:10,color:color,outline:{color:"#fff",width:1}},
                 popupTemplate:{title:"{battle_name}",content:
                   "<b>Dates:</b> {start_text}{end_text_sep}{end_text}<br><b>Location:</b> {location}, {state}<br><b>Campaign:</b> {campaign}<br><b>Result:</b> {result}<br><b>Total casualties (dataset):</b> {cas_text}<br><b>NPS CWSAC ID:</b> {cwsac_id}<br>{link}"}
               });
@@ -385,9 +391,9 @@ function renderLegend(){
   const on=(n)=>map.layers[n]&&map.layers[n].visible;
   if(on("battles")){
     rows.push(`<h5>Battles (by result)</h5>
-      <div><span class="sw dot" style="background:#2E5E9E"></span>Union victory</div>
-      <div><span class="sw dot" style="background:#9C7A4A"></span>Confederate victory</div>
-      <div><span class="sw dot" style="background:#6E6E6E"></span>Inconclusive / other</div>`);
+      <div><span class="sw dot" style="background:#2E5E9E"></span>Union victory (circle)</div>
+      <div><span class="sw sq" style="background:#9C7A4A"></span>Confederate victory (square)</div>
+      <div><span class="sw tri" style="border-bottom-color:#6E6E6E"></span>Inconclusive / other (triangle)</div>`);
   }
   if(on("control")) rows.push(`<h5>Union control milestones</h5><div><span class="sw" style="background:#7FA7D9"></span>1862</div><div><span class="sw" style="background:#2E5E9E"></span>1863</div><div><span class="sw" style="background:#1F4275"></span>1864</div><div><span class="sw" style="background:#12294A"></span>1865</div>`);
   if(on("blockade")) rows.push(`<h5>Blockade</h5><div><span class="sw" style="border:0;border-top:3px dashed #2E5E9E;height:0"></span>Union naval blockade</div>`);
@@ -496,7 +502,7 @@ function missionAsk(){
   const c=missionEl;
   c.appendChild(h(`<h2>Ask</h2>`));
   c.appendChild(h(`<p class="question-head">Who fought in the Civil War?</p>`));
-  c.appendChild(h(`<p>Click states on the map to see how each one lined up in 1861. Then complete the tasks below.</p>`));
+  c.appendChild(h(`<p>Click states on the map to see how each one lined up in 1861, or use the state list in the task below. Then complete the tasks.</p>`));
   setLayer("states",true); setLayer("capitals",true); setLayer("battles",false); setLayer("blockade",false); setLayer("control",false);
   goTo({center:[-88,37],zoom:4});
 
@@ -505,22 +511,34 @@ function missionAsk(){
   const card=h(`<div class="task"><span class="pts">15 pts</span><h3>Map task: find one of each</h3><ul class="steps"></ul><div class="feedback" hidden></div></div>`);
   const ul=card.querySelector(".steps"), f=card.querySelector(".feedback");
   const found=state.answers.askFound||{};
-  function draw(){ const nxt=need.find(n=>!found[n.cls]); ul.innerHTML=""; need.forEach(n=>ul.appendChild(h(`<li class="${found[n.cls]?"done":(nxt&&nxt.cls===n.cls?"active":"")}">Click ${n.label}${found[n.cls]?` (you chose <b>${found[n.cls]}</b>)`:""}</li>`))); }
+  function draw(){ const nxt=need.find(n=>!found[n.cls]); ul.innerHTML=""; need.forEach(n=>ul.appendChild(h(`<li class="${found[n.cls]?"done":(nxt&&nxt.cls===n.cls?"active":"")}">Find ${n.label}${found[n.cls]?` (you chose <b>${found[n.cls]}</b>)`:""}</li>`))); }
   draw();
-  if(map.failed){ f.hidden=false; fb(f,false,"The map is not available, so this task is skipped. Answer the questions below."); state.tasks.askMap=true; save(); }
-  else if(!map.ready){ f.hidden=false; fb(f,false,"Waiting for the map to load."); }
+  // Same judging for a map click and for the keyboard-accessible state picker
+  function judgeState(name){
+    const cls=(STATE_CLASS[name]||{}).cls;
+    const target=need.find(n=>!found[n.cls]); if(!target) return;
+    f.hidden=false;
+    if(cls===target.cls){ found[cls]=name; state.answers.askFound=found; save(); draw();
+      fb(f,true,`${name}: ${CLASS_LABEL[cls]}. ${(STATE_CLASS[name].note||"")}`); award(5,"points");
+      if(need.every(n=>found[n.cls])){ state.tasks.askMap=true; save(); banner(""); map.clickHandler=null; renderMission(); }
+    } else { fb(f,false,`${name} was ${cls?CLASS_LABEL[cls].toLowerCase():"not a state in 1861"}. Try again: choose ${target.label}.`); }
+  }
+  if(!taskDone("askMap")){
+    // Keyboard / screen-reader alternative to clicking the map
+    const names=Object.keys(STATE_CLASS).sort();
+    const pick=h(`<div class="alt-input"><label for="askState">Or choose a state from the list</label>
+      <div class="row"><select id="askState"><option value="">Select a state</option>${names.map(n=>`<option value="${n}">${n}</option>`).join("")}</select><button class="secondary" type="button" id="askStateBtn">Check state</button></div></div>`);
+    pick.querySelector("#askStateBtn").addEventListener("click",()=>{ const v=pick.querySelector("#askState").value; if(!v){ f.hidden=false; fb(f,false,"Select a state first."); return; } judgeState(v); });
+    card.insertBefore(pick,f);
+  }
+  if(map.failed && !taskDone("askMap")){ f.hidden=false; fb(f,false,"The map is not available. Use the state list above to complete this task."); }
+  else if(!map.ready && !taskDone("askMap")){ f.hidden=false; fb(f,false,"Waiting for the map to load. You can use the state list above in the meantime."); }
   else if(!taskDone("askMap")){
     banner("<b>Click a state</b> on the map to identify it.");
     map.clickHandler=async(ev)=>{
       const hit=await map.view.hitTest(ev,{include:map.layers.states});
       const g=hit.results[0]&&hit.results[0].graphic; if(!g) return;
-      const name=g.attributes.STATE_NAME, cls=(STATE_CLASS[name]||{}).cls;
-      const target=need.find(n=>!found[n.cls]); if(!target) return;
-      f.hidden=false;
-      if(cls===target.cls){ found[cls]=name; state.answers.askFound=found; save(); draw();
-        fb(f,true,`${name}: ${CLASS_LABEL[cls]}. ${(STATE_CLASS[name].note||"")}`); award(5,"points");
-        if(need.every(n=>found[n.cls])){ state.tasks.askMap=true; save(); banner(""); map.clickHandler=null; renderMission(); }
-      } else { fb(f,false,`${name} was ${cls?CLASS_LABEL[cls].toLowerCase():"not a state in 1861"}. Try again: click ${target.label}.`); }
+      judgeState(g.attributes.STATE_NAME);
     };
   } else { f.hidden=false; fb(f,true,"Done. All three kinds of state found."); }
   c.appendChild(card);
@@ -550,11 +568,21 @@ function missionAcquire(){
 
   // Measure task
   const card=h(`<div class="task"><span class="pts">15 pts</span><h3>Map task: measure the distance</h3>
-    <p>Use the <b>Measure distance</b> tool (the ruler button under the Layers list, top right of the map): click once on Washington, D.C., then double-click on Richmond. Enter the straight-line distance in miles.</p>
-    <div class="row"><input type="number" id="distIn" min="0" step="1" placeholder="miles"><button class="primary" type="button" id="distBtn">Check</button><button class="secondary" type="button" id="distTool">Open measure tool</button></div>
+    <p>Use the <b>Measure distance</b> tool (the ruler button under the Layers list, top right of the map): click once on Washington, D.C., then double-click on Richmond. Enter the straight-line distance in miles. If you cannot use the measure tool, press <b>Calculate the distance</b> and the app will measure it for you.</p>
+    <div class="row"><label for="distIn">Distance in miles</label><input type="number" id="distIn" min="0" step="1" placeholder="miles"><button class="primary" type="button" id="distBtn">Check</button></div>
+    <div class="row" style="margin-top:8px"><button class="secondary" type="button" id="distTool">Open measure tool</button><button class="secondary" type="button" id="distCalc">Calculate the distance</button></div>
     <div class="feedback" hidden></div></div>`);
   const f=card.querySelector(".feedback");
   card.querySelector("#distTool").addEventListener("click",()=>{ toggleMeasure(true); banner("<b>Measure:</b> click D.C., then double-click Richmond. Read the miles in the tool panel."); });
+  card.querySelector("#distCalc").addEventListener("click",()=>{
+    // Keyboard-accessible alternative to the pointer-only measure widget
+    const dc=CAPITALS[0], rv=CAPITALS[1];
+    let miles=96;
+    if(map.ready&&map.modules){ const {Point}=map.modules; miles=Math.round(milesBetween(new Point({longitude:dc.lon,latitude:dc.lat}),new Point({longitude:rv.lon,latitude:rv.lat}))); }
+    card.querySelector("#distIn").value=miles;
+    f.hidden=false; fb(f,true,`Straight-line distance from Washington, D.C. to Richmond, Virginia: <b>${miles} miles</b>. The value is filled in above; press Check to record it.`);
+    card.querySelector("#distIn").focus();
+  });
   card.querySelector("#distBtn").addEventListener("click",()=>{
     const v=+card.querySelector("#distIn").value; f.hidden=false;
     if(!v){ fb(f,false,"Enter a number of miles first."); return; }
@@ -581,7 +609,7 @@ function missionExplore(){
   setLayer("states",true); setLayer("capitals",true); setLayer("blockade",true); setLayer("battles",true); setLayer("control",false);
   goTo({center:[-86,34],zoom:5});
 
-  c.appendChild(h(`<p>The <b>Union blockade</b> is now on the map as a dashed line, and every battle in the dataset is a dot, colored by who won. Use the year buttons at the bottom of the map (1861 through 1865) to see where the fighting was each year, then choose All to see the whole war.</p>`));
+  c.appendChild(h(`<p>The <b>Union blockade</b> is now on the map as a dashed line, and every battle in the dataset is a marker: a circle for a Union victory, a square for a Confederate victory, a triangle for other results. Use the year buttons at the bottom of the map (1861 through 1865) to see where the fighting was each year, then choose All to see the whole war.</p>`));
   const yrRow=h(`<div class="row" style="margin-bottom:14px"></div>`);
   ["All",1861,1862,1863,1864,1865].forEach(y=>{ const b=h(`<button class="secondary" type="button">${y}</button>`); b.addEventListener("click",()=>{ if(!map.ready) return; setLayer("battles",true); const bar=document.getElementById("yearBar"); bar.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.textContent===String(y))); filterBattleYear(y==="All"?null:y); if(y!=="All") markTask("expYears",5,"points"); }); yrRow.appendChild(b); });
   c.appendChild(yrRow);
@@ -602,7 +630,7 @@ function missionExplore(){
     correct:1,explain:KEY.georgia});
 
   // Find-the-battle challenge
-  const card=h(`<div class="task"><span class="pts">up to ${KEY_BATTLES.length*10} pts</span><h3>Map challenge: find the battle</h3><p class="hint">Click where you think each battle was fought. Within 60 miles scores 10 points, within 150 miles scores 5. You can skip any battle (no points, but no penalty).</p><div id="fbArea"></div></div>`);
+  const card=h(`<div class="task"><span class="pts">up to ${KEY_BATTLES.length*10} pts</span><h3>Map challenge: find the battle</h3><p class="hint">Click where you think each battle was fought, or pan the map with the keyboard and guess the map center. Within 60 miles scores 10 points, within 150 miles scores 5. You can skip any battle (no points, but no penalty).</p><div id="fbArea"></div></div>`);
   c.appendChild(card);
   const area=card.querySelector("#fbArea");
   const prog=state.answers.findBattle||{index:0,earned:0,log:[]};
@@ -618,33 +646,37 @@ function missionExplore(){
     }
     const kb=KEY_BATTLES[prog.index]; const feat=findBattle(kb);
     if(!feat){ prog.log.push({title:kb.title,skipped:true}); prog.index++; state.answers.findBattle=prog; save(); renderFind(); return; }
-    area.appendChild(h(`<p><b>${prog.index+1} of ${KEY_BATTLES.length}:</b> Where was the Battle of <b>${kb.title}</b> (${kb.date})?</p><p class="hint">Click the map. Points so far: ${prog.earned}.</p>`));
-    const skipRow=h(`<div class="row" style="margin-bottom:8px"><button class="secondary" type="button">Skip this battle</button><button class="secondary" type="button">Skip the rest</button></div>`);
-    const [skipOne,skipAll]=skipRow.querySelectorAll("button");
+    area.appendChild(h(`<p><b>${prog.index+1} of ${KEY_BATTLES.length}:</b> Where was the Battle of <b>${kb.title}</b> (${kb.date})?</p><p class="hint">Click the map, or move the map with the arrow keys (press + and − to zoom) and then press <b>Guess the map center</b>. Points so far: ${prog.earned}.</p>`));
+    const skipRow=h(`<div class="row" style="margin-bottom:8px"><button class="primary" type="button">Guess the map center</button><button class="secondary" type="button">Skip this battle</button><button class="secondary" type="button">Skip the rest</button></div>`);
+    const [guessCenter,skipOne,skipAll]=skipRow.querySelectorAll("button");
+    guessCenter.addEventListener("click",()=>{ if(map.ready&&map.view.center) judgeGuess(map.view.center); });
     skipOne.addEventListener("click",()=>{ prog.log.push({title:kb.title,skipped:true}); prog.index++; state.answers.findBattle=prog; save(); map.layers.game.removeAll(); renderFind(); });
     skipAll.addEventListener("click",()=>{ for(let i=prog.index;i<KEY_BATTLES.length;i++) prog.log.push({title:KEY_BATTLES[i].title,skipped:true}); prog.index=KEY_BATTLES.length; state.answers.findBattle=prog; save(); map.layers.game.removeAll(); renderFind(); });
     area.appendChild(skipRow);
     banner(`<b>Find:</b> ${kb.title}, ${kb.date}. Click the map where it was fought.`);
-    map.clickHandler=(ev)=>{
+    // Same judging for a map click and for the keyboard "Guess the map center" button
+    function judgeGuess(mapPoint){
       const {Graphic}=map.modules;
-      const clickPt=map.modules.wmUtils.webMercatorToGeographic(ev.mapPoint);
+      const clickPt=map.modules.wmUtils.webMercatorToGeographic(mapPoint);
       const miles=milesBetween(clickPt,feat.geometry);
       const pts= miles<=60?10 : miles<=150?5 : 0;
       map.layers.game.removeAll();
-      map.layers.game.add(new Graphic({geometry:ev.mapPoint,symbol:{type:"simple-marker",style:"x",size:14,color:"#A83A2A",outline:{color:"#A83A2A",width:2}}}));
+      map.layers.game.add(new Graphic({geometry:mapPoint,symbol:{type:"simple-marker",style:"x",size:14,color:"#A83A2A",outline:{color:"#A83A2A",width:2}}}));
       map.layers.game.add(new Graphic({geometry:feat.geometry,symbol:{type:"simple-marker",style:"circle",size:16,color:[180,132,45,.9],outline:{color:"#fff",width:2}}}));
       map.clickHandler=null; banner("");
       prog.earned+=pts; prog.log.push({title:kb.title,miles:Math.round(miles),pts});
       award(pts,"points"); state.answers.findBattle=prog; save();
       const a=feat.attributes;
       area.innerHTML="";
-      area.appendChild(h(`<div class="feedback ${pts?"good":"bad"}">Your click was <b>${Math.round(miles)} miles</b> from ${kb.title}. ${pts?`+${pts} points.`:"No points this time."}</div>
+      area.appendChild(h(`<div class="feedback ${pts?"good":"bad"}">Your guess was <b>${Math.round(miles)} miles</b> from ${kb.title}. ${pts?`+${pts} points.`:"No points this time."}</div>
         <div class="battle-card"><h4>${kb.title}</h4><div class="meta">${kb.date} · ${kb.place}${a.result?` · Result in dataset: ${a.result}`:""}</div><p>${kb.facts}</p>${a.url?`<a href="${a.url}" target="_blank" rel="noopener">Read more (American Battlefield Trust)</a>`:""}</div>`));
       const next=h(`<button class="primary" type="button" style="margin-top:10px">${prog.index+1<KEY_BATTLES.length?"Next battle":"Finish challenge"}</button>`);
       next.addEventListener("click",()=>{ prog.index++; state.answers.findBattle=prog; save(); map.layers.game.removeAll(); renderFind(); });
       area.appendChild(next);
+      next.focus();
       goTo({target:feat.geometry,zoom:Math.max(map.view.zoom,6)});
-    };
+    }
+    map.clickHandler=(ev)=>judgeGuess(ev.mapPoint);
   }
   renderFind();
   finishBlock(c,"explore","analyze",["expBlockade","expPatterns","expDirection","expGeorgia","expFind"]);
@@ -682,8 +714,9 @@ function missionAnalyze(){
   function draw(check){
     ol.innerHTML="";
     order.forEach((ei,pos)=>{
-      const li=h(`<li><span class="num">${pos+1}</span><span>${events[ei].t}${check||done?` <span class="hint">(${events[ei].d})</span>`:""}</span><span class="mv"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></span></li>`);
-      if(check||done) li.classList.add(ei===pos?"right":"wrong");
+      const judged=check||done, isRight=ei===pos;
+      const li=h(`<li><span class="num">${pos+1}</span><span>${events[ei].t}${judged?` <span class="hint">(${events[ei].d})</span>`:""}</span>${judged?`<span class="verdict ${isRight?"ok":"no"}">${isRight?"✓ In order":"✗ Out of order"}</span>`:""}<span class="mv"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></span></li>`);
+      if(judged) li.classList.add(isRight?"right":"wrong");
       const [up,dn]=li.querySelectorAll("button");
       up.disabled=pos===0||done; dn.disabled=pos===order.length-1||done;
       up.addEventListener("click",()=>{[order[pos-1],order[pos]]=[order[pos],order[pos-1]];draw();});
@@ -779,9 +812,34 @@ function buildReport(){
    MODALS
    ===================================================================== */
 const modalBack=document.getElementById("modalBack"), modalBody=document.getElementById("modalBody");
-function openModal(html){ modalBody.innerHTML=`<button class="secondary close" type="button">Close</button>`+html; modalBack.classList.add("show"); modalBody.querySelector(".close").focus(); }
-modalBack.addEventListener("click",e=>{ if(e.target===modalBack||e.target.classList.contains("close")) modalBack.classList.remove("show"); });
-document.addEventListener("keydown",e=>{ if(e.key==="Escape") modalBack.classList.remove("show"); });
+let modalOpener=null;
+const FOCUSABLE='a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+function setPageInert(on){ document.querySelectorAll("header.topbar, main").forEach(el=>{ if(on) el.setAttribute("inert",""); else el.removeAttribute("inert"); el.setAttribute("aria-hidden",on?"true":"false"); }); }
+function openModal(html){
+  modalOpener=document.activeElement;
+  modalBody.innerHTML=`<button class="secondary close" type="button">Close</button>`+html;
+  const heading=modalBody.querySelector("h2"); if(heading){ heading.id="modalTitle"; modalBack.setAttribute("aria-labelledby","modalTitle"); }
+  modalBack.classList.add("show"); setPageInert(true);
+  modalBody.querySelector(".close").focus();
+}
+function closeModal(){
+  if(!modalBack.classList.contains("show")) return;
+  modalBack.classList.remove("show"); setPageInert(false);
+  if(modalOpener&&typeof modalOpener.focus==="function") modalOpener.focus();
+  modalOpener=null;
+}
+modalBack.addEventListener("click",e=>{ if(e.target===modalBack||e.target.classList.contains("close")) closeModal(); });
+document.addEventListener("keydown",e=>{
+  if(!modalBack.classList.contains("show")) return;
+  if(e.key==="Escape"){ e.preventDefault(); closeModal(); return; }
+  if(e.key==="Tab"){   // keep focus inside the dialog
+    const items=[...modalBody.querySelectorAll(FOCUSABLE)].filter(el=>el.offsetParent!==null);
+    if(!items.length) return;
+    const first=items[0], last=items[items.length-1];
+    if(e.shiftKey && (document.activeElement===first || !modalBody.contains(document.activeElement))){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+  }
+});
 
 document.getElementById("btnHelp").addEventListener("click",()=>openModal(`
   <h2>How to play</h2>
@@ -791,6 +849,7 @@ document.getElementById("btnHelp").addEventListener("click",()=>openModal(`
     <li>The Layers list (top right) has a checkbox for each map layer. When Battles is checked, year buttons appear at the bottom of the map so you can look at one year of the war at a time.</li>
     <li>Click any state, capital, battle, or milestone marker to open its details.</li>
     <li>Measure distance: the ruler button under the Layers list opens the measure tool. Click a start point, then double-click to finish. The tool panel shows miles.</li>
+    <li>Keyboard: every map task has a keyboard alternative. Choose a state from the list in Ask, press "Calculate the distance" in Acquire, and in the battle challenge press Tab until the map is focused, move it with the arrow keys (+ and − zoom), then press "Guess the map center."</li>
     <li>The app has two modes. GeoInquiry mode (the default) walks you through the five sections: Ask, Acquire, Explore, Analyze, Act. Explore mode hides the GeoInquiry panel and scoring and turns on every layer so you can use the map freely; switch with the GeoInquiry / Explore buttons in the header.</li>
     <li>Your progress saves in this browser. Use Reset to start over.</li>
   </ul>`));
@@ -824,7 +883,11 @@ document.getElementById("btnTeacher").addEventListener("click",()=>openModal(`
     <li>Scoring: 10–15 points per question, streak bonus of 5 after three correct in a row, up to 90 points in the find-the-battle challenge, 20 for sequencing, 25 for the final argument.</li>
     <li>Extension ideas from the lesson: have students describe where a heat map of battles would be densest, or estimate which battles fall within 60 miles of a capital using the measure tool.</li>
   </ul>
-  <p style="margin-top:22px;border-top:1px solid var(--rule);padding-top:12px">Designed by <a href="https://tbaker.com" target="_blank" rel="noopener">Tom Baker</a></p>`));
+  <p class="cc-license" style="margin-top:22px;border-top:1px solid var(--rule);padding-top:12px">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="license noopener"><img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.svg" alt="Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license" width="88" height="31" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'CC BY-NC-SA 4.0'}))"></a>
+    <span>This work is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="license noopener">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</span>
+  </p>
+  <p>Designed by <a href="https://tbaker.com" target="_blank" rel="noopener">Tom Baker</a></p>`));
 
 /* ---------- Mission / Explore modes ---------- */
 let mode="mission";   // the app always starts in Mission mode

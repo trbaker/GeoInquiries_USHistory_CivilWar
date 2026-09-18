@@ -30,7 +30,7 @@
   </div>
   <div class="hud">
     <div class="score"><span id="scoreVal">0</span> <span>points</span></div>
-    <div class="badges" id="badges"></div>
+    <div class="badges" id="badges" role="list" aria-label="Section badges"></div>
     <div class="tools">
       <button id="btnHelp" type="button">How to play</button>
       <button id="btnSources" type="button">Sources</button>
@@ -67,8 +67,8 @@
       <div class="legend-head"><span>Legend</span><button type="button" id="legendToggle" aria-expanded="true" aria-controls="legend">Hide</button></div>
       <div class="legend-body" id="legend"></div>
     </div>
-    <div class="yearbar" id="yearBar" aria-label="Filter battles by year"></div>
-    <div class="mapstatus" id="mapStatus">Loading map</div>
+    <div class="yearbar" id="yearBar" role="group" aria-label="Filter battles by year"></div>
+    <div class="mapstatus" id="mapStatus" role="status">Loading map</div>
     <div class="map-error" id="mapError">
       <div>
         <h3 style="font-family:var(--serif);margin-top:0">The map could not load</h3>
@@ -81,7 +81,7 @@
 <div class="modal-back" id="modalBack" role="dialog" aria-modal="true">
   <div class="modal" id="modalBody"></div>
 </div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status"></div>
 
 <script src="https://js.arcgis.com/4.30/"></script>
 <script src="app.js"></script>
