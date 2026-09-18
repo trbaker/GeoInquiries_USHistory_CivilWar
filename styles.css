@@ -328,7 +328,7 @@
   .modal table{border-collapse:collapse;width:100%;font-size:.9rem}
   .modal td,.modal th{border-bottom:1px solid var(--rule);padding:6px 8px;text-align:left;vertical-align:top}
   .modal code{font-size:.85em;word-break:break-all}
-  .modal .policy-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin:14px 0 0;font-size:.95rem}
+  .modal .policy-links{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin:14px 0 0;font-size:.95rem}
   .modal .cc-badge{text-align:center;margin:26px 0 0}
   .modal .cc-badge a{display:inline-block;line-height:0}
   .modal .cc-badge img{width:88px;height:31px}
