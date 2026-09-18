@@ -885,6 +885,7 @@ document.getElementById("btnTeacher").addEventListener("click",()=>openModal(`
   </ul>
   <p style="margin-top:22px;border-top:1px solid var(--rule);padding-top:12px"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="license noopener">Creative Commons license</a></p>
   <p>Designed by <a href="https://tbaker.com" target="_blank" rel="noopener">Tom Baker</a></p>
+  <nav class="policy-links" aria-label="Policies"><a href="https://trbaker.github.io/geoinquiries/support/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://trbaker.github.io/geoinquiries/support/accessibility.html" target="_blank" rel="noopener">Accessibility</a><a href="https://trbaker.github.io/geoinquiries/support/termsofuse.html" target="_blank" rel="noopener">Terms of use</a></nav>
   <p class="cc-badge"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="license noopener"><img src="cc-by-nc-sa.svg" data-fallback="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.svg" alt="Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license" width="88" height="31" onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;delete this.dataset.fallback;}else{this.replaceWith(Object.assign(document.createElement('b'),{textContent:'CC BY-NC-SA 4.0'}))}"></a></p>`));
 
 /* ---------- Mission / Explore modes ---------- */
