@@ -21,15 +21,16 @@
 <body>
 
 <header class="topbar">
+  <a class="logo" href="https://trbaker.github.com/geoinquiries" target="_blank" rel="noopener"><img src="logo.png" alt="GeoInquiries 2.0" width="48" height="48"></a>
   <h1>A Nation Divided: Civil War Map Missions
     <small>Based on the Esri GeoInquiries lesson for U.S. History</small></h1>
+  <div class="mode-switch" role="group" aria-label="Map mode">
+    <button type="button" id="modeMission" aria-pressed="true">GeoInquiry</button>
+    <button type="button" id="modeExplore" aria-pressed="false">Explore</button>
+  </div>
   <div class="hud">
     <div class="score"><span id="scoreVal">0</span> <span>points</span></div>
     <div class="badges" id="badges"></div>
-    <div class="mode-switch" role="group" aria-label="Map mode">
-      <button type="button" id="modeMission" aria-pressed="true">GeoInquiry</button>
-      <button type="button" id="modeExplore" aria-pressed="false">Explore</button>
-    </div>
     <div class="tools">
       <button id="btnHelp" type="button">How to play</button>
       <button id="btnSources" type="button">Sources</button>

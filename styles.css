@@ -40,12 +40,16 @@
 
   /* ---------- Top bar ---------- */
   header.topbar{
-    display:flex;align-items:center;gap:20px;
-    padding:10px 20px;
+    position:relative;
+    display:flex;align-items:center;gap:14px;
+    padding:8px 236px 8px 16px;   /* right padding reserves the corner for the mode switch */
     background:var(--ink);color:#fff;
     border-bottom:4px solid var(--brass);
     flex-wrap:wrap;
   }
+  .topbar .logo{display:block;flex:0 0 auto;line-height:0;border-radius:8px}
+  .topbar .logo img{width:48px;height:48px;display:block}
+  .topbar .logo:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
   .topbar h1{
     font-family:var(--serif);font-weight:700;font-size:1.35rem;line-height:1.1;margin:0;letter-spacing:.01em;
   }
@@ -71,13 +75,24 @@
     background:#fff;color:var(--ink);padding:4px 8px;border-radius:4px;font-family:var(--sans);
     font-weight:400;font-size:.8rem;white-space:nowrap;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.2);
   }
-  .mode-switch{display:flex;border:1px solid rgba(255,255,255,.45);border-radius:6px;overflow:hidden}
-  .mode-switch button{
-    background:transparent;color:#fff;border:0;padding:6px 14px;font-size:.9rem;font-weight:600;
+  /* Mode switch: pinned to the upper-right corner, styled as a light pill so it
+     reads as a mode selector rather than one of the outlined action buttons. */
+  .mode-switch{
+    position:absolute;top:10px;right:20px;z-index:2;
+    display:flex;padding:3px;gap:2px;
+    background:var(--sheet);border-radius:999px;
+    box-shadow:0 1px 3px rgba(0,0,0,.35), inset 0 0 0 1px rgba(27,42,60,.15);
   }
-  .mode-switch button+button{border-left:1px solid rgba(255,255,255,.45)}
-  .mode-switch button[aria-pressed="true"]{background:var(--brass);color:var(--ink)}
-  .mode-switch button:hover:not([aria-pressed="true"]){background:rgba(255,255,255,.12)}
+  .mode-switch button{
+    background:transparent;color:var(--ink);border:0;border-radius:999px;
+    padding:5px 16px;font-size:.9rem;font-weight:700;letter-spacing:.01em;line-height:1.3;
+  }
+  .mode-switch button[aria-pressed="true"]{
+    background:var(--ink);color:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  .mode-switch button:hover:not([aria-pressed="true"]){background:rgba(27,42,60,.1)}
+  .mode-switch button:focus-visible{outline:3px solid var(--brass);outline-offset:1px}
   body.mode-explore .hud .score,
   body.mode-explore .hud .badges{display:none}
   body.mode-explore .rail{display:none}
@@ -314,6 +329,8 @@
     .rail{width:auto;flex:1 1 auto;border-right:0;border-top:1px solid var(--rule);order:2;max-height:55vh}
     .mapwrap{order:1;height:45vh;flex:0 0 45vh}
     .topbar h1{font-size:1.1rem}
+    header.topbar{padding-right:20px;padding-top:50px}
+    .mode-switch{top:10px;right:12px}
     .legend{max-width:180px;font-size:.78rem}
   }
   @media (prefers-reduced-motion: reduce){
