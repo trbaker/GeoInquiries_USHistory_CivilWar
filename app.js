@@ -883,9 +883,11 @@ document.getElementById("btnTeacher").addEventListener("click",()=>openModal(`
     <li>Scoring: 10–15 points per question, streak bonus of 5 after three correct in a row, up to 90 points in the find-the-battle challenge, 20 for sequencing, 25 for the final argument.</li>
     <li>Extension ideas from the lesson: have students describe where a heat map of battles would be densest, or estimate which battles fall within 60 miles of a capital using the measure tool.</li>
   </ul>
-  <p style="margin-top:22px;border-top:1px solid var(--rule);padding-top:12px">Designed by <a href="https://tbaker.com" target="_blank" rel="noopener">Tom Baker</a></p>
+  <div class="modal-footer">
+  <p>Designed by <a href="https://tbaker.com" target="_blank" rel="noopener">Tom Baker</a></p>
   <nav class="policy-links" aria-label="Policies"><a href="https://trbaker.github.io/geoinquiries/support/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://trbaker.github.io/geoinquiries/support/accessibility.html" target="_blank" rel="noopener">Accessibility</a><a href="https://trbaker.github.io/geoinquiries/support/termsofuse.html" target="_blank" rel="noopener">Terms of use</a></nav>
-  <p class="cc-badge"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="license noopener"><img src="cc-by-nc-sa.svg" data-fallback="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.svg" alt="Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license" width="88" height="31" onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;delete this.dataset.fallback;}else{this.replaceWith(Object.assign(document.createElement('b'),{textContent:'CC BY-NC-SA 4.0'}))}"></a></p>`));
+  <p class="cc-badge"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="license noopener"><img src="cc-by-nc-sa.svg" data-fallback="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.svg" alt="Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license" width="88" height="31" onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;delete this.dataset.fallback;}else{this.replaceWith(Object.assign(document.createElement('b'),{textContent:'CC BY-NC-SA 4.0'}))}"></a></p>
+  </div>`));
 
 /* ---------- Mission / Explore modes ---------- */
 let mode="mission";   // the app always starts in Mission mode
