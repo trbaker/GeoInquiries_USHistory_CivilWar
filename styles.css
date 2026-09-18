@@ -330,6 +330,8 @@
   .modal code{font-size:.85em;word-break:break-all}
   .modal .modal-footer{margin-top:22px;border-top:1px solid var(--rule);padding-top:14px;text-align:center}
   .modal .modal-footer p{max-width:none;margin:0 0 10px}
+  .modal .modal-footer p.footer-left{text-align:left;margin-bottom:6px}
+  .modal .modal-footer p.footer-left + .policy-links{margin-top:14px}
   .modal .policy-links{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin:0 0 18px;font-size:.95rem}
   .modal .cc-badge{text-align:center;margin:0}
   .modal .cc-badge a{display:inline-block;line-height:0}
