@@ -884,7 +884,7 @@ document.getElementById("btnTeacher").addEventListener("click",()=>openModal(`
     <li>Extension ideas from the lesson: have students describe where a heat map of battles would be densest, or estimate which battles fall within 60 miles of a capital using the measure tool.</li>
   </ul>
   <p class="cc-license" style="margin-top:22px;border-top:1px solid var(--rule);padding-top:12px">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="license noopener"><img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.svg" alt="Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license" width="88" height="31" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'CC BY-NC-SA 4.0'}))"></a>
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="license noopener"><img src="cc-by-nc-sa.svg" data-fallback="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.svg" alt="Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license" width="88" height="31" onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;delete this.dataset.fallback;}else{this.replaceWith(Object.assign(document.createElement('b'),{textContent:'CC BY-NC-SA 4.0'}))}"></a>
     <span>This work is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="license noopener">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</span>
   </p>
   <p>Designed by <a href="https://tbaker.com" target="_blank" rel="noopener">Tom Baker</a></p>`));
