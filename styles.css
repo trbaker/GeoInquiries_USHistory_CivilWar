@@ -328,8 +328,9 @@
   .modal table{border-collapse:collapse;width:100%;font-size:.9rem}
   .modal td,.modal th{border-bottom:1px solid var(--rule);padding:6px 8px;text-align:left;vertical-align:top}
   .modal code{font-size:.85em;word-break:break-all}
-  .modal .cc-license{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .modal .cc-license img{display:block;width:88px;height:31px}
+  .modal .cc-badge{text-align:center;margin:26px 0 0}
+  .modal .cc-badge a{display:inline-block;line-height:0}
+  .modal .cc-badge img{width:88px;height:31px}
   .toast{
     position:fixed;left:50%;transform:translateX(-50%);bottom:24px;z-index:120;
     background:var(--brass-light);color:var(--ink);font-weight:700;padding:10px 18px;border-radius:24px;
